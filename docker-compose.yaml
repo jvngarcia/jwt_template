@@ -1,12 +1,44 @@
 version: "3.9"
+
 services:
-  jwt_template:
+  
+  db:
+    container_name: ${DB_SERVER}
+    image: postgres:15.5
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    restart: always
+    volumes:
+      - auth_db:/var/lib/postgresql/data
+
+  pgAdmin:
+    depends_on:
+      - db
+    container_name: auth_pgAdmin
+    image: dpage/pgadmin4:6.17
+    ports:
+      - 8080:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: angel@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: 1234
+    volumes:
+      - pgAdmin:/var/lib/pgadmin
+
+
+  app:
+    depends_on:
+      - db
     container_name: auth_app
     volumes:
       - ./:/app
-    build: .
     image: python:3.12
     ports:
       - 8000:8000
     restart: always
     command: bash -c "cd /app && python -m venv env && . ./env/bin/activate && pip install -r requirements.txt && uvicorn main:app --reload --host 0.0.0.0 --port 8000"
+
+volumes:
+  auth_db:
+  pgAdmin:
