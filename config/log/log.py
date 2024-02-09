@@ -2,7 +2,7 @@ import logging
 import os
 
 # Create a custom logger
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARN)
 logger = logging.getLogger(__name__)
 
 path = "logs"
